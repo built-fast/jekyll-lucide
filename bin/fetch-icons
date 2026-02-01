@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "fileutils"
+
+GEM_ROOT = File.expand_path("..", __dir__)
+
+def run(cmd)
+  puts "Running: #{cmd}"
+  system(cmd) || abort("Command failed: #{cmd}")
+end
+
+def fetch_version
+  Dir.chdir("tmp/lucide") do
+    rev = `git rev-list --tags --max-count=1`.strip
+    tag = `git describe --tags #{rev}`.strip
+    run "git checkout #{tag}"
+    tag
+  end
+end
+
+def strip_svg(input)
+  content = File.read(input)
+  # Extract inner content between <svg> tags
+  if content =~ %r{<svg[^>]*>(.*)</svg>}m
+    $1.gsub(/\s*\n\s*/, "").strip
+  else
+    abort "Failed to parse SVG: #{input}"
+  end
+end
+
+FileUtils.chdir(GEM_ROOT) do
+  FileUtils.rm_rf("tmp")
+  FileUtils.mkdir_p("tmp")
+  FileUtils.mkdir_p("icons")
+
+  puts "Cloning lucide-icons/lucide..."
+  run "git clone --depth 1 --no-single-branch https://github.com/lucide-icons/lucide tmp/lucide"
+
+  puts "Checking out latest version..."
+  version = fetch_version
+  puts "Using lucide version: #{version}"
+
+  puts "Processing icons..."
+  Dir.glob("tmp/lucide/icons/*.svg").each do |input|
+    output = File.join("icons", File.basename(input))
+    File.write(output, strip_svg(input))
+  end
+
+  File.write "lib/jekyll-lucide/lucide_version.rb", <<~RUBY
+    # frozen_string_literal: true
+
+    module JekyllLucide
+      LUCIDE_VERSION = "#{version}"
+    end
+  RUBY
+
+  count = Dir.glob("icons/*.svg").count
+  puts "Done! Processed #{count} icons from Lucide #{version}"
+
+  FileUtils.rm_rf("tmp")
+end

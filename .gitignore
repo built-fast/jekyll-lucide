@@ -1,0 +1,11 @@
+/.bundle/
+/pkg/
+/tmp/
+/coverage/
+/doc/
+/spec/reports/
+
+*.gem
+Gemfile.lock
+.rspec_status
+.byebug_history
