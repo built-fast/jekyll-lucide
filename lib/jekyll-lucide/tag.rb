@@ -24,12 +24,14 @@ module JekyllLucide
       icon_name = parse_icon_name(context)
       options = parse_options(context)
 
+      inner_svg, custom = load_icon(site, icon_name)
+
+      defaults = custom ? JekyllLucide::BASE_OPTIONS : JekyllLucide::DEFAULT_OPTIONS
       config_defaults = site.config.dig("lucide", "defaults") || {}
-      attrs = JekyllLucide::DEFAULT_OPTIONS
+      attrs = defaults
         .merge(config_defaults)
         .merge(options)
 
-      inner_svg = load_icon(site, icon_name)
       build_svg(inner_svg, attrs)
     end
 
@@ -78,12 +80,12 @@ module JekyllLucide
     def load_icon(site, name)
       custom_dir = site.config.dig("lucide", "custom_icons_dir") || "_lucide"
       custom_path = File.join(site.source, custom_dir, "#{name}.svg")
-      return File.read(custom_path) if File.exist?(custom_path)
+      return [File.read(custom_path), true] if File.exist?(custom_path)
 
       bundled_path = File.join(JekyllLucide::GEM_ROOT, "icons", "#{name}.svg")
       raise ArgumentError, "Unknown icon '#{name}'" unless File.exist?(bundled_path)
 
-      File.read(bundled_path)
+      [File.read(bundled_path), false]
     end
 
     def build_svg(inner, attrs)

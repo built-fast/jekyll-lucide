@@ -165,6 +165,35 @@ RSpec.describe JekyllLucide::Tag do
       expect(result).to include("<circle/>")
     end
 
+    it "uses minimal defaults for custom icons" do
+      custom_dir = File.join(@tmpdir, "_lucide")
+      write_custom_icon(custom_dir, "my-custom-icon", "<circle/>")
+
+      site = make_site("source" => @tmpdir)
+      result = render_tag('"my-custom-icon"', site: site)
+
+      expect(result).to include('aria-hidden="true"')
+      expect(result).to include('width="24"')
+      expect(result).to include('height="24"')
+      expect(result).to include('viewBox="0 0 24 24"')
+      expect(result).not_to include('fill=')
+      expect(result).not_to include('stroke=')
+      expect(result).not_to include('stroke-width=')
+      expect(result).not_to include('stroke-linecap=')
+      expect(result).not_to include('stroke-linejoin=')
+    end
+
+    it "allows custom icons to set fill and stroke via tag options" do
+      custom_dir = File.join(@tmpdir, "_lucide")
+      write_custom_icon(custom_dir, "my-filled-icon", '<path d="M0 0"/>')
+
+      site = make_site("source" => @tmpdir)
+      result = render_tag('"my-filled-icon" fill="currentColor"', site: site)
+
+      expect(result).to include('fill="currentColor"')
+      expect(result).not_to include('stroke=')
+    end
+
     it "overrides a bundled icon with a custom one" do
       custom_dir = File.join(@tmpdir, "_lucide")
       write_custom_icon(custom_dir, "home", "<rect/>")
@@ -186,11 +215,13 @@ RSpec.describe JekyllLucide::Tag do
       expect(result).to include("<line/>")
     end
 
-    it "falls back to bundled icons when custom dir has no match" do
+    it "falls back to bundled icons with full defaults" do
       site = make_site("source" => @tmpdir)
       result = render_tag('"home"', site: site)
 
       expect(result).to include("<path")
+      expect(result).to include('stroke="currentColor"')
+      expect(result).to include('fill="none"')
     end
 
     it "raises an error when icon not found in either location" do
