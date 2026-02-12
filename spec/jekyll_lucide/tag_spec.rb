@@ -142,6 +142,65 @@ RSpec.describe JekyllLucide::Tag do
     end
   end
 
+  describe "custom icons" do
+    around do |example|
+      Dir.mktmpdir do |tmpdir|
+        @tmpdir = tmpdir
+        example.run
+      end
+    end
+
+    def write_custom_icon(dir, name, content)
+      FileUtils.mkdir_p(dir)
+      File.write(File.join(dir, "#{name}.svg"), content)
+    end
+
+    it "loads a custom icon from _lucide/" do
+      custom_dir = File.join(@tmpdir, "_lucide")
+      write_custom_icon(custom_dir, "my-custom-icon", "<circle/>")
+
+      site = make_site("source" => @tmpdir)
+      result = render_tag('"my-custom-icon"', site: site)
+
+      expect(result).to include("<circle/>")
+    end
+
+    it "overrides a bundled icon with a custom one" do
+      custom_dir = File.join(@tmpdir, "_lucide")
+      write_custom_icon(custom_dir, "home", "<rect/>")
+
+      site = make_site("source" => @tmpdir)
+      result = render_tag('"home"', site: site)
+
+      expect(result).to include("<rect/>")
+      expect(result).not_to include("<path")
+    end
+
+    it "supports a custom directory via lucide.custom_icons_dir" do
+      custom_dir = File.join(@tmpdir, "_my_icons")
+      write_custom_icon(custom_dir, "my-icon", "<line/>")
+
+      site = make_site("source" => @tmpdir, "lucide" => { "custom_icons_dir" => "_my_icons" })
+      result = render_tag('"my-icon"', site: site)
+
+      expect(result).to include("<line/>")
+    end
+
+    it "falls back to bundled icons when custom dir has no match" do
+      site = make_site("source" => @tmpdir)
+      result = render_tag('"home"', site: site)
+
+      expect(result).to include("<path")
+    end
+
+    it "raises an error when icon not found in either location" do
+      site = make_site("source" => @tmpdir)
+      result = render_tag('"nonexistent-icon-xyz"', site: site)
+
+      expect(result).to include("Liquid error")
+    end
+  end
+
   describe "error handling" do
     it "raises an error for unknown icons" do
       result = render_tag('"nonexistent-icon-xyz"')

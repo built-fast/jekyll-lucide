@@ -16,8 +16,10 @@ Gem::Specification.new do |spec|
 
   spec.metadata["homepage_uri"] = spec.homepage
 
+  spec.bindir = "exe"
+  spec.executables = ["jekyll-lucide"]
   spec.files = Dir.chdir(__dir__) do
-    Dir["{lib,icons}/**/*", "LICENSE", "README.md"]
+    Dir["{exe,lib,icons}/**/*", "LICENSE", "README.md"]
   end
   spec.require_paths = ["lib"]
 

@@ -77,6 +77,45 @@ lucide:
     stroke-width: "1.5"
 ```
 
+### Custom Icons
+
+You can override bundled Lucide icons or add your own by placing SVG files in a `_lucide/` directory in your site root. Files should contain inner SVG content only (no outer `<svg>` tags), matching the format of the bundled icons.
+
+```
+_lucide/
+  github.svg    # overrides the bundled github icon
+  my-logo.svg   # a new custom icon
+```
+
+Then use them like any other icon:
+
+```liquid
+{% lucide_icon "github" %}
+{% lucide_icon "my-logo" size="32" %}
+```
+
+You can use the `jekyll-lucide` CLI to install SVG files as custom icons. It strips the outer `<svg>` tags automatically:
+
+```bash
+bundle exec jekyll-lucide install-icon logo.svg
+bundle exec jekyll-lucide install-icon --dir _my_icons logo.svg
+bundle exec jekyll-lucide install-icon --name my-logo logo.svg
+bundle exec jekyll-lucide install-icon icon1.svg icon2.svg
+```
+
+The resolution order is:
+
+1. `_lucide/{name}.svg` (custom/override)
+2. Bundled Lucide icon
+3. Error if neither exists
+
+To use a different directory, set `custom_icons_dir` in `_config.yml`:
+
+```yaml
+lucide:
+  custom_icons_dir: _my_icons
+```
+
 ## Available Icons
 
 See the full list of available icons at [lucide.dev/icons](https://lucide.dev/icons).

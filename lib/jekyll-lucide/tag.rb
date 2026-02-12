@@ -29,7 +29,7 @@ module JekyllLucide
         .merge(config_defaults)
         .merge(options)
 
-      inner_svg = load_icon(icon_name)
+      inner_svg = load_icon(site, icon_name)
       build_svg(inner_svg, attrs)
     end
 
@@ -75,11 +75,15 @@ module JekyllLucide
       options
     end
 
-    def load_icon(name)
-      path = File.join(JekyllLucide::GEM_ROOT, "icons", "#{name}.svg")
-      raise ArgumentError, "Unknown Lucide icon '#{name}'" unless File.exist?(path)
+    def load_icon(site, name)
+      custom_dir = site.config.dig("lucide", "custom_icons_dir") || "_lucide"
+      custom_path = File.join(site.source, custom_dir, "#{name}.svg")
+      return File.read(custom_path) if File.exist?(custom_path)
 
-      File.read(path)
+      bundled_path = File.join(JekyllLucide::GEM_ROOT, "icons", "#{name}.svg")
+      raise ArgumentError, "Unknown icon '#{name}'" unless File.exist?(bundled_path)
+
+      File.read(bundled_path)
     end
 
     def build_svg(inner, attrs)
