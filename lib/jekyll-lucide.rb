@@ -9,6 +9,7 @@ module JekyllLucide
 
   BASE_OPTIONS = {
     "aria-hidden" => "true",
+    "fill" => "currentColor",
     "width" => "24",
     "height" => "24",
     "viewBox" => "0 0 24 24"

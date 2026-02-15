@@ -176,7 +176,7 @@ RSpec.describe JekyllLucide::Tag do
       expect(result).to include('width="24"')
       expect(result).to include('height="24"')
       expect(result).to include('viewBox="0 0 24 24"')
-      expect(result).not_to include('fill=')
+      expect(result).to include('fill="currentColor"')
       expect(result).not_to include('stroke=')
       expect(result).not_to include('stroke-width=')
       expect(result).not_to include('stroke-linecap=')
