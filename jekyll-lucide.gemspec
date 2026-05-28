@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "A Jekyll plugin that provides Lucide icons as inline SVGs via a Liquid tag."
   spec.homepage = "https://github.com/built-fast/jekyll-lucide"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
 
