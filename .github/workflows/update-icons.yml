@@ -1,0 +1,83 @@
+name: Update Icons
+
+on:
+  schedule:
+    # Run weekly on Mondays at 9am UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    name: Update Lucide icons
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Get current version
+        id: current
+        run: |
+          if [ -f lib/jekyll-lucide/lucide_version.rb ]; then
+            version=$(grep -oP 'LUCIDE_VERSION = "\K[^"]+' lib/jekyll-lucide/lucide_version.rb)
+          else
+            version="none"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Get latest Lucide version
+        id: latest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version=$(gh api repos/lucide-icons/lucide/releases/latest --jq .tag_name)
+          if [[ ! "$version" =~ ^[A-Za-z0-9._+-]+$ ]]; then
+            echo "Refusing unexpected tag name: $version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check if update needed
+        id: check
+        env:
+          CURRENT_VERSION: ${{ steps.current.outputs.version }}
+          LATEST_VERSION: ${{ steps.latest.outputs.version }}
+        run: |
+          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "Update available: $CURRENT_VERSION -> $LATEST_VERSION"
+          else
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            echo "Already up to date: $CURRENT_VERSION"
+          fi
+
+      - name: Fetch icons
+        if: steps.check.outputs.needed == 'true'
+        run: bin/fetch-icons
+
+      - name: Create Pull Request
+        if: steps.check.outputs.needed == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          commit-message: "chore: update Lucide icons to ${{ steps.latest.outputs.version }}"
+          title: "Update Lucide icons to ${{ steps.latest.outputs.version }}"
+          body: |
+            Updates Lucide icons from `${{ steps.current.outputs.version }}` to `${{ steps.latest.outputs.version }}`.
+
+            See [Lucide releases](https://github.com/lucide-icons/lucide/releases/tag/${{ steps.latest.outputs.version }}) for changes.
+          branch: update-lucide-icons
+          delete-branch: true
