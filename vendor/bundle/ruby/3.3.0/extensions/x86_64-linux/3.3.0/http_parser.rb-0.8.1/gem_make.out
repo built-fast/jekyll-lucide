@@ -1,0 +1,27 @@
+current directory: /home/runner/work/jekyll-lucide/jekyll-lucide/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.1/ext/ruby_http_parser
+/opt/hostedtoolcache/Ruby/3.3.13/x64/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/runner/work/jekyll-lucide/jekyll-lucide/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.1/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20261109-2337-ucokfc sitelibdir\=./.gem.20261109-2337-ucokfc clean
+
+current directory: /home/runner/work/jekyll-lucide/jekyll-lucide/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.1/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20261109-2337-ucokfc sitelibdir\=./.gem.20261109-2337-ucokfc
+compiling ruby_http_parser.c
+ruby_http_parser.c: In function ‘Parser_execute’:
+ruby_http_parser.c:373:17: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘long int’ [-Wsign-compare]
+  373 |     if (nparsed < len)
+      |                 ^
+At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
+compiling ryah_http_parser.c
+linking shared-object ruby_http_parser.so
+
+current directory: /home/runner/work/jekyll-lucide/jekyll-lucide/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.1/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20261109-2337-ucokfc sitelibdir\=./.gem.20261109-2337-ucokfc install
+/usr/bin/install -c -m 0755 ruby_http_parser.so ./.gem.20261109-2337-ucokfc
+
+current directory: /home/runner/work/jekyll-lucide/jekyll-lucide/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.1/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20261109-2337-ucokfc sitelibdir\=./.gem.20261109-2337-ucokfc clean

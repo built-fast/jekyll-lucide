@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module JekyllLucide
-  LUCIDE_VERSION = "0.563.1"
+  LUCIDE_VERSION = "@lucide/lab@0.14.0"
 end
